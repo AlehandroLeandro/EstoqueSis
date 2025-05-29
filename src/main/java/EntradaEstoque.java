@@ -1,30 +1,25 @@
 // EntradaEstoque.java
-import javax.swing.*;
-import java.io.*;
+import java.io.FileNotFoundException;
 import java.util.Scanner;
 
 public class EntradaEstoque {
     Auxiliares aux = new Auxiliares();
-    public void importarDeArquivo(String caminho, CadastroItem cadastro) {
-        try (Scanner scanner = new Scanner(new File(caminho))) {
-            while (scanner.hasNextLine()) {
                 String linha = scanner.nextLine();
                 String[] partes = linha.split(";");
-                if (partes.length == 2) {
-                    int codigo = Integer.parseInt(partes[0].trim());
-                    int quantidade = Integer.parseInt(partes[1].trim());
-
-                    Item item = cadastro.buscarPorCodigo(codigo);
-                    if (item != null) {
-                        item.adicionarQuantidade(quantidade);
-                    }
-                }
+    public void entrada( CadastroItem cadastro) {
+        try{
+            int codItem = aux.receberInt("Código do Item:");
+            double qntItem = aux.receberDouble("Quantidade: ");
+            Item item = cadastro.buscarPorCodigo(codItem);
+            if(item!=null){
+                item.adicionarQuantidade(qntItem);
+                aux.msg( "Entrada de itens com sucesso.");
             }
-            aux.msg( "Itens importados com sucesso.");
-        } catch (FileNotFoundException e) {
-            aux.msg( "Arquivo não encontrado.");
-        } catch (Exception e) {
-            aux.msg( "Erro ao processar o arquivo.");
+
+        } catch (NumberFormatException e) {
+            aux.msg( "Código ou quantidade inválida");
+        }catch (IllegalArgumentException e){
+            aux .msg("Item não existe.");
         }
     }
 }

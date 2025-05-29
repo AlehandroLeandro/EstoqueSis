@@ -3,12 +3,9 @@ import javax.swing.*;
 import java.util.ArrayList;
 
 public class CadastroItem {
-    private ArrayList<Item> itens;
+    private ArrayList<Item> itens = new ArrayList<>();
     private Auxiliares aux = new Auxiliares();
 
-    public CadastroItem() {
-        this.itens = new ArrayList<>();
-    }
 
     public void cadastrarNovoItem() {
         String descricao = aux.receberTexto("Digite a descrição do novo item:");

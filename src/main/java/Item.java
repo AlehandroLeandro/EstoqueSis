@@ -4,13 +4,12 @@ public class Item {
 
     private final int codigo;
     private final String descricao;
-    private int quantidade;
+    private double quantidade;
     private double valor;
 
     public Item(String descricao, double valor) {
         this.codigo = proximoCodigo++;
         this.descricao = descricao;
-        this.quantidade = 0;
         this.valor = valor;
     }
 
@@ -22,17 +21,17 @@ public class Item {
         return descricao;
     }
 
-    public int getQuantidade() {
+    public double getQuantidade() {
         return quantidade;
     }
 
-    public void adicionarQuantidade(int qtd) {
+    public void adicionarQuantidade(double qtd) {
         if (qtd > 0) {
             quantidade += qtd;
         }
     }
 
-    public boolean removerQuantidade(int qtd) {
+    public boolean removerQuantidade(double qtd) {
         if (qtd > 0 && qtd <= quantidade) {
             quantidade -= qtd;
             return true;

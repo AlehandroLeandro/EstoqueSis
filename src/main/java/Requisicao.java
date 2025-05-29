@@ -4,57 +4,56 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Requisicao {
-    Auxiliares aux = new Auxiliares();
-
-    private static int geradorCodigo = 1;
-
+    private static int proximoCodigo = 1;
     private final int codigo;
     private final LocalDate data;
-    private final Map<Item, Integer> itens;
-    private double valorTotal;
+    private final Map<Item, Integer> itensRequisitados;
+    Auxiliares aux = new Auxiliares();
 
     public Requisicao() {
-        this.codigo = geradorCodigo++;
+        this.codigo = proximoCodigo++;
         this.data = LocalDate.now();
-        this.itens = new HashMap<>();
-        this.valorTotal = 0.0;
+        this.itensRequisitados = new HashMap<>();
     }
 
-    public void adicionarItem(Item item, int quantidade) {
-        if (quantidade > 0 && item.getQuantidade() >= quantidade) {
-            item.removerQuantidade(quantidade);
-            itens.put(item, itens.getOrDefault(item, 0) + quantidade);
-            aux.msg(  "Item adicionado à requisição.");
+    public boolean adicionarItem(Item item, double quantidade) {
+        if (item.getQuantidade() >= quantidade && quantidade > 0) {
+            itensRequisitados.put(item, (int) (itensRequisitados.getOrDefault(item, 0) + quantidade));
+            aux.msg( "Item adicionado à requisição.");
+            return true;
         } else {
-            aux.msg(  "Quantidade inválida ou insuficiente no estoque.");
+            aux.msg("Estoque insuficiente ou quantidade inválida.");
+            return false;
         }
     }
 
-    public void removerItem(int codigoItem) {
-        Item encontrado = null;
-        for (Item item : itens.keySet()) {
-            if (item.getCodigo() == codigoItem) {
-                encontrado = item;
-                break;
-            }
+    public void listarItensTemporarios() {
+        if (itensRequisitados.isEmpty()) {
+            aux.msg( "Nenhum item adicionado à requisição.");
+            return;
         }
 
-        if (encontrado != null) {
-            int qtdRemovida = itens.remove(encontrado);
-            encontrado.adicionarQuantidade(qtdRemovida);
-            aux.msg(  "Item removido da requisição.");
-        } else {
-            aux.msg(  "Item não encontrado na requisição.");
-        }
-    }
-
-    public void mostrarResumo() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Requisição #").append(codigo).append(" - ").append(data).append("\n");
-        for (Map.Entry<Item, Integer> entry : itens.entrySet()) {
-            sb.append("Item: ").append(entry.getKey().getDescricao())
+        StringBuilder sb = new StringBuilder("Itens na requisição:\n");
+        for (Map.Entry<Item, Integer> entry : itensRequisitados.entrySet()) {
+            sb.append("Código: ").append(entry.getKey().getCodigo())
+                    .append(" | Descrição: ").append(entry.getKey().getDescricao())
                     .append(" | Quantidade: ").append(entry.getValue()).append("\n");
         }
-        aux.msg(sb.toString());
+        aux.msg( sb.toString());
+    }
+
+    public void confirmar() {
+        for (Map.Entry<Item, Integer> entry : itensRequisitados.entrySet()) {
+            entry.getKey().removerQuantidade(entry.getValue());
+        }
+        aux.msg("Requisição #" + codigo + " confirmada e estoque atualizado.");
+    }
+
+    public LocalDate getData() {
+        return data;
+    }
+
+    public int getCodigo() {
+        return codigo;
     }
 }
